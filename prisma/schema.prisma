@@ -1,0 +1,101 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  firstName String    @db.VarChar(50)
+  lastName  String    @db.VarChar(50)
+  email     String    @unique @db.VarChar(50)
+  mobile    String    @db.VarChar(50)
+  password  String    @db.VarChar(50)
+  otp       String    @db.VarChar(50)
+  comments  Comment[]
+  createdAt DateTime  @default(now()) @db.Timestamp(0)
+  updatedAt DateTime  @default(now()) @updatedAt @db.Timestamp(0)
+
+  @@map("users")
+}
+
+model Comment {
+  id          Int    @id @default(autoincrement())
+  User        User?  @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  userId      Int?
+  description String @db.VarChar(1000)
+  News        News?  @relation(fields: [newsId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  newsId      Int?
+
+  @@map("comments")
+}
+
+model News {
+  id               Int       @id @default(autoincrement())
+  title            String    @db.VarChar(100)
+  shortDescription String    @db.VarChar(400)
+  image1           String    @db.VarChar(300)
+  image2           String    @db.VarChar(300)
+  image3           String    @db.VarChar(300)
+  image4           String    @db.VarChar(300)
+  keywords         String    @db.VarChar(300)
+  longDescription  String    @db.VarChar(300)
+  type             String    @db.VarChar(200)
+  comments         Comment[]
+  createdAt        DateTime  @default(now()) @db.Timestamp(0)
+  updatedAt        DateTime  @default(now()) @updatedAt @db.Timestamp(0)
+  Category         Category? @relation(fields: [categoryId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  categoryId       Int?
+
+  @@map("news_list")
+}
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique @db.VarChar(100)
+  newsList  News[]
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(0)
+
+  @@map("categories")
+}
+
+model Social {
+  id       Int    @id @default(autoincrement())
+  about    String @db.Text
+  address  String @db.Text
+  facebook String @db.VarChar(200)
+  youtube  String @db.VarChar(200)
+  x        String @db.VarChar(200)
+  linkedin String @db.VarChar(200)
+
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(0)
+
+  @@map("socials")
+}
+
+model Subscriber {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique @db.VarChar(100)
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(0)
+
+  @@map("subscribers")
+}
+
+model Policy {
+  id              Int      @id @default(autoincrement())
+  longDescription String   @db.LongText
+  type            String   @db.VarChar(50)
+  createdAt       DateTime @default(now()) @db.Timestamp(0)
+  updatedAt       DateTime @default(now()) @updatedAt @db.Timestamp(0)
+
+  @@map("policies")
+}
